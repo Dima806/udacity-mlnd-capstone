@@ -81,8 +81,22 @@ for data_str in data_list:
         # total number of attempts made by the student 
         num_attempts = stud_info_df[stud_info_df['Student Response Type'] == 'ATTEMPT'].shape[0]
         
+        # fraction of short attemps (with time <= 3 sec)
+        if (num_attempts > 0):
+            frac_3s_atts = stud_info_df[(stud_info_df['Student Response Type'] == 'ATTEMPT') & \
+                                   (stud_info_df['Duration (sec)'].replace({'.': 0}).astype(float) <= 3.0)].shape[0] / num_attempts
+        else:
+            frac_3s_atts = 0
+        
         # total number of hints made by the student 
         num_hints = stud_info_df[stud_info_df['Student Response Type'] == 'HINT_REQUEST'].shape[0]
+        
+        # fraction of short hints (with time <= 1 sec)
+        if (num_hints > 0):
+            frac_1s_hints = stud_info_df[(stud_info_df['Student Response Type'] == 'HINT_REQUEST') & \
+                                   (stud_info_df['Duration (sec)'].replace({'.': 0}).astype(float) <= 3.0)].shape[0] / num_hints
+        else:
+            frac_1s_hints = 0
         
         # total number of days loading the system
         num_days = len(set(stud_info_df['Day']))
@@ -140,6 +154,8 @@ for data_str in data_list:
         stud_data.loc[stud_name, 'num_atts'] = num_attempts
         stud_data.loc[stud_name, 'num_hints'] = num_hints
         stud_data.loc[stud_name, 'frac_corr_atts'] = fraction_correct_attempts
+        stud_data.loc[stud_name, 'frac_3s_atts'] = frac_3s_atts
+        stud_data.loc[stud_name, 'frac_1s_hints'] = frac_1s_hints
         stud_data.loc[stud_name, 'time_atts'] = total_time_attempts
         stud_data.loc[stud_name, 'time_hints'] = total_time_hints
         stud_data.loc[stud_name, 'probl_views'] = avg_max_problem_views
