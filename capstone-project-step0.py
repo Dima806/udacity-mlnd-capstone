@@ -22,8 +22,8 @@ for data_str in data_list:
     data = pd.read_csv(data_str, sep="\t", low_memory=False)
     data = data.dropna(axis=1, how='all')
     
-    
-    data = data[['Anon Student Id', 'Session Id', 'Duration (sec)', 'Student Response Type', 'Problem Name', 'Problem View', 'Attempt At Step', 'Outcome']]
+    data['Day'] = data['Time'].apply(lambda x: x.split(" ")[0])
+    data = data[['Anon Student Id', 'Session Id', 'Duration (sec)', 'Student Response Type', 'Problem Name', 'Problem View', 'Attempt At Step', 'Outcome', 'Day']]
     
     # Then, I collect the following information about each student (9 numerical parameters, in total):
     # - total number of sessions opened (`'Session Id'`);
@@ -84,6 +84,8 @@ for data_str in data_list:
         # total number of hints made by the student 
         num_hints = stud_info_df[stud_info_df['Student Response Type'] == 'HINT_REQUEST'].shape[0]
         
+        # total number of days loading the system
+        num_days = len(set(stud_info_df['Day']))
         # fraction of correct attempts
         if (num_attempts > 0):
             fraction_correct_attempts = stud_info_df[(stud_info_df['Student Response Type'] == 'ATTEMPT') & (stud_info_df['Outcome'] == 'CORRECT')].shape[0] / num_attempts
@@ -133,6 +135,7 @@ for data_str in data_list:
         stud_data.loc[stud_name, 'learn_par_d'] = x[1]
         stud_data.loc[stud_name, 'diff_par_b'] = x[0]      
         stud_data.loc[stud_name, 'num_sess'] = num_sessions
+        stud_data.loc[stud_name, 'num_days'] = num_days
         stud_data.loc[stud_name, 'num_probs'] = num_problems
         stud_data.loc[stud_name, 'num_atts'] = num_attempts
         stud_data.loc[stud_name, 'num_hints'] = num_hints
